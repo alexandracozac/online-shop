@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 public class Product {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue()
     private long id;
     private String description;
     @NotNull
