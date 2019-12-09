@@ -18,54 +18,46 @@ import static org.hamcrest.Matchers.greaterThan;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class ProductServiceIntegrationTests {
+public class ProductServiceIntegrationTests {
 
-	@Autowired      //pt teste se pune pe variabila
+	@Autowired
 	private ProductService productService;
 
-
 	@Test
-	public void testCreateProduct_whenValidRequest_thenProductIsSaved() {   //auto test
+	public void testCreateProduct_whenValidRequest_thenProductIsSaved() {
 		createProduct();
 	}
 
-
-
 	@Test(expected = TransactionSystemException.class)
-	public void testCreateProduct_whenInvalidRequest_thenThrowException(){
+	public void testCreateProduct_whenInvalidRequest_thenThrowException() {
 		SaveProductRequest request = new SaveProductRequest();
-		//leaving request properties with default null values
-		//to validate the negative flow
+		// leaving request properties with default null values
+		// to validate the negative flow
 
 		productService.createProduct(request);
 	}
 
 	@Test
-	private void testGetProduct_whenExistingProduct_thenReturnProduct(){
+	public void testGetProduct_whenExistingProduct_thenReturnProduct() {
 		Product createdProduct = createProduct();
 
-		Product retrievedProduct = productService.getProduct(createdProduct.getId());
+		Product product = productService.getProduct(createdProduct.getId());
 
-		assertThat(retrievedProduct, notNullValue());
-		assertThat(retrievedProduct.getId(), is(createdProduct.getId()));
-		assertThat(retrievedProduct.getName(), is(createdProduct.getName()));
-		assertThat(retrievedProduct.getPrice(), is(createdProduct.getPrice()));
-		assertThat(retrievedProduct.getQuantity(), is(createdProduct.getQuantity()));
-		assertThat(retrievedProduct.getDescription(), is(createdProduct.getDescription()));
-
+		assertThat(product, notNullValue());
+		assertThat(product.getId(), is(createdProduct.getId()));
+		assertThat(product.getName(), is(createdProduct.getName()));
+		assertThat(product.getPrice(), is(createdProduct.getPrice()));
+		assertThat(product.getQuantity(), is(createdProduct.getQuantity()));
+		assertThat(product.getDescription(), is(createdProduct.getDescription()));
 	}
 
 	@Test(expected = ResourceNotFoundException.class)
-	public void testGetProduct_whenNonExistingProduct_thenThrowResourceNotFoundException(){
-
-		productService.getProduct(9999999999999L);
-
-
+	public void testGetProduct_whenNonExistingProduct_thenThrowResourceNotFoundException() {
+		productService.getProduct(9999999999L);
 	}
 
 	@Test
-	public void testUpdateProduct_whenValidRequest_thenReturnUpdatedProduct(){
-
+	public void testUpdateProduct_whenValidRequest_thenReturnUpdatedProduct() {
 		Product createdProduct = createProduct();
 
 		SaveProductRequest request = new SaveProductRequest();
@@ -74,7 +66,8 @@ class ProductServiceIntegrationTests {
 		request.setPrice(createdProduct.getPrice() + 10);
 		request.setQuantity(createdProduct.getQuantity() + 10);
 
-		Product updatedProduct = productService.updateProduct(createdProduct.getId(), request);
+		Product updatedProduct =
+				productService.updateProduct(createdProduct.getId(), request);
 
 		assertThat(updatedProduct, notNullValue());
 		assertThat(updatedProduct.getId(), is(createdProduct.getId()));
@@ -82,28 +75,23 @@ class ProductServiceIntegrationTests {
 		assertThat(updatedProduct.getDescription(), is(request.getDescription()));
 		assertThat(updatedProduct.getPrice(), is(request.getPrice()));
 		assertThat(updatedProduct.getQuantity(), is(request.getQuantity()));
-
 	}
 
 	@Test(expected = ResourceNotFoundException.class)
-	public void testDeleteProduct_whenExistingProduct_thenProductIsDeleted(){
+	public void testDeleteProduct_whenExistingProduct_thenProductIsDeleted() {
 		Product product = createProduct();
 
 		productService.deleteProduct(product.getId());
-		productService.getProduct(product.getId());
 
+		productService.getProduct(product.getId());
 	}
 
-
-
-	@Test
 	private Product createProduct() {
 		SaveProductRequest request = new SaveProductRequest();
 		request.setName("Banana " + System.currentTimeMillis());
 		request.setPrice(5.0);
 		request.setQuantity(100);
 		request.setDescription("Healthy food");
-
 
 		Product createdProduct = productService.createProduct(request);
 

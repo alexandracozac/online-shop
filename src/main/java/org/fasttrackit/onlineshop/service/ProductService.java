@@ -28,7 +28,7 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Product createProduct(SaveProductRequest request) { //create product
+    public Product createProduct(SaveProductRequest request) {
         LOGGER.info("Creating product {} ", request);
         Product product = new Product();
         product.setDescription(request.getDescription());
@@ -40,53 +40,51 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product getProduct(long id){
-        LOGGER.info("Retrieving product {}, id");
+    public Product getProduct(long id) {
+        LOGGER.info("Retrieving product {}", id);
 
+//        Optional<Product> productOptional = productRepository.findById(id);
+//
+//        if (productOptional.isPresent()) {
+//            return productOptional.get();
+//        } else {
+//            throw new ResourceNotFoundException("");
+//        }
 
-        // using Optional
+//        // using Optional
         return productRepository.findById(id)
                 // lambda expression
-                .orElseThrow( () -> new ResourceNotFoundException("Product " + id + " does not exist."));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product " + id + " does not exist."));
     }
 
-
-    public Page<Product> getProducts(GetProductsRequest request, Pageable pageable){
+    public Page<Product> getProducts(GetProductsRequest request, Pageable pageable) {
         LOGGER.info("Retrieving products: {}", request);
-
-        if(request != null && request.getPartialName() != null && request.getMinQuantity() != null){
-
-            return productRepository.findByNameContainingAndQuantityGreaterThanEqual(request.getPartialName(),
-                    request.getMinQuantity(), pageable);
-
-        }else if (request != null && request.getPartialName() != null){
-            return productRepository.findByNameContaining(request.getPartialName(), pageable);
-
-        }else {
+        if (request != null && request.getPartialName() != null &&
+                request.getMinQuantity() != null) {
+            return productRepository.findByNameContainingAndQuantityGreaterThanEqual(
+                    request.getPartialName(), request.getMinQuantity(), pageable);
+        } else if (request != null && request.getPartialName() != null) {
+            return productRepository.findByNameContaining(
+                    request.getPartialName(), pageable);
+        } else {
             return productRepository.findAll(pageable);
         }
-
-
-
     }
 
-    public Product updateProduct(long id, SaveProductRequest request){
-
-        LOGGER.info("Updating product {}: {} ", id, request);
+    public Product updateProduct(long id, SaveProductRequest request) {
+        LOGGER.info("Updating product {}: {}", id, request);
 
         Product product = getProduct(id);
 
-        BeanUtils.copyProperties(request, product);     //copiaza de pe req pe prod
+        BeanUtils.copyProperties(request, product);
 
         return productRepository.save(product);
-
     }
 
-    public void deleteProduct(long id){
-
+    public void deleteProduct(long id) {
         LOGGER.info("Deleting product {}", id);
         productRepository.deleteById(id);
         LOGGER.info("Deleted product {}", id);
-
     }
 }
