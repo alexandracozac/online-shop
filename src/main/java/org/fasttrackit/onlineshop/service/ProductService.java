@@ -33,7 +33,7 @@ public class ProductService {
 
     public Product createProduct(SaveProductRequest request) {
         LOGGER.info("Creating product {} ", request);
-        Product product = objectMapper.convertValue(request, Product.class)
+        Product product = objectMapper.convertValue(request, Product.class);
 
 
             //statements below will create the same object as the objectMapper did above

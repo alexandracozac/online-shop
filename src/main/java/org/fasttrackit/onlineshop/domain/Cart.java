@@ -14,11 +14,29 @@ public class Cart {
     @MapsId
     private Customer customer;
 
-    @ManyToMany(cascade = CascadeType.MERGE)
+    @ManyToMany(cascade = CascadeType.MERGE)  //stergere prod din cos, nu din tabela in cascada prin merge
     @JoinTable(name = "cart_product",
     joinColumns = @JoinColumn(name = "cart_id"),
     inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private Set<Product> Products = new HashSet<>(); //colectie de produse unicate
+
+    private Set<Product> products = new HashSet<>(); //colectie de produse unicate
+
+    public void addToCart(Product product){
+        //adding product in current cart
+        products.add(product);
+
+        //adding current cart to the carts set of the received product
+        product.getCarts().add(this);
+
+    }
+
+    public void removeFromCart(Product product){
+
+        products.remove(product);
+
+        product.getCarts().remove(this);
+
+    }
 
     public Long getId() {
         return id;
@@ -38,11 +56,11 @@ public class Cart {
 
 
     public Set<Product> getProducts() {
-        return Products;
+        return products;
     }
 
     public void setProducts(Set<Product> products) {
-        Products = products;
+        this.products = products;
     }
 
     @Override
@@ -59,4 +77,8 @@ public class Cart {
     public int hashCode() {
         return id.hashCode();
     }
+
+
+
+
 }
