@@ -28,12 +28,12 @@ public class CustomerService {
     public Customer createCustomer(SaveCustomerRequest request) {
         LOGGER.info("Creating customer {} ", request);
         Customer customer = new Customer();
+
         customer.setFirstName(request.getFirstName());
         customer.setLastName(request.getLastName());
 
         return customerRepository.save(customer);
     }
-
 
     public Customer getCustomer(long id) {
         LOGGER.info("Retrieving customer {}", id);

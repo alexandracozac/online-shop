@@ -1,7 +1,7 @@
 package org.fasttrackit.onlineshop.web;
 
-
 import org.fasttrackit.onlineshop.domain.Product;
+import org.fasttrackit.onlineshop.service.ProductResponse;
 import org.fasttrackit.onlineshop.service.ProductService;
 import org.fasttrackit.onlineshop.transfer.GetProductsRequest;
 import org.fasttrackit.onlineshop.transfer.SaveProductRequest;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @CrossOrigin
-@RestController //axate pe resurse - formate json
+@RestController
 @RequestMapping("/products")
 public class ProductController {
 
@@ -26,36 +26,38 @@ public class ProductController {
         this.productService = productService;
     }
 
+    // todo: fix lazy loading for all endpoints
+
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody @Valid SaveProductRequest request){
+    public ResponseEntity<Product> createProduct(@RequestBody @Valid SaveProductRequest request) {
         Product product = productService.createProduct(request);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
 
-
-    @GetMapping("/id")
-    public ResponseEntity<Product> getProduct(@PathVariable ("id") Long id){
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProduct(@PathVariable("id") Long id) {
         Product product = productService.getProduct(id);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<Page<Product>> getProducts(GetProductsRequest request, Pageable pageable){
-
-        Page<Product> products = productService.getProducts(request, pageable);
+    public ResponseEntity<Page<ProductResponse>> getProducts(
+            GetProductsRequest request, Pageable pageable) {
+        Page<ProductResponse> products = productService.getProducts(request, pageable);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<Product> updateProduct(@PathVariable ("id") Long id, @RequestBody @Valid SaveProductRequest request){
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable("id") Long id, @RequestBody @Valid SaveProductRequest request) {
         Product product = productService.updateProduct(id, request);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @DeleteMapping("/id")
-    public ResponseEntity<Product> deleteProduct(@PathVariable ("id") Long id){
+    //    @RequestMapping(method = RequestMethod.DELETE, path = "/{id}")
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProduct(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }

@@ -11,8 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -35,16 +40,13 @@ public class ProductService {
         LOGGER.info("Creating product {} ", request);
         Product product = objectMapper.convertValue(request, Product.class);
 
-
-            //statements below will create the same object as the objectMapper did above
-        /*
-        Product product = new Product();
-        product.setDescription(request.getDescription());
-        product.setName(request.getName());
-        product.setPrice(request.getPrice());
-        product.setQuantity(request.getQuantity());
-        product.setImageUrl(request.getImageUrl());
-        */
+        // statements below would created the same object as the objectMapper did above
+//        Product product = new Product();
+//        product.setDescription(request.getDescription());
+//        product.setName(request.getName());
+//        product.setPrice(request.getPrice());
+//        product.setQuantity(request.getQuantity());
+//        product.setImageUrl(request.getImageUrl());
 
         return productRepository.save(product);
     }
@@ -67,18 +69,39 @@ public class ProductService {
                         "Product " + id + " does not exist."));
     }
 
-    public Page<Product> getProducts(GetProductsRequest request, Pageable pageable) {
+    @Transactional
+    public Page<ProductResponse> getProducts(GetProductsRequest request, Pageable pageable) {
         LOGGER.info("Retrieving products: {}", request);
+
+        Page<Product> products;
+
         if (request != null && request.getPartialName() != null &&
                 request.getMinQuantity() != null) {
-            return productRepository.findByNameContainingAndQuantityGreaterThanEqual(
+            products = productRepository.findByNameContainingAndQuantityGreaterThanEqual(
                     request.getPartialName(), request.getMinQuantity(), pageable);
         } else if (request != null && request.getPartialName() != null) {
-            return productRepository.findByNameContaining(
+            products = productRepository.findByNameContaining(
                     request.getPartialName(), pageable);
         } else {
-            return productRepository.findAll(pageable);
+            products = productRepository.findAll(pageable);
         }
+
+        List<ProductResponse> productResponses = new ArrayList<>();
+
+        for (Product product : products.getContent()) {
+            ProductResponse productResponse = new ProductResponse();
+            productResponse.setId(product.getId());
+            productResponse.setName(product.getName());
+            productResponse.setPrice(product.getPrice());
+            productResponse.setDescription(product.getDescription());
+            productResponse.setQuantity(product.getQuantity());
+            productResponse.setImageUrl(product.getImageUrl());
+
+            productResponses.add(productResponse);
+        }
+
+        return new PageImpl<>(
+                productResponses, pageable, products.getTotalElements());
     }
 
     public Product updateProduct(long id, SaveProductRequest request) {
