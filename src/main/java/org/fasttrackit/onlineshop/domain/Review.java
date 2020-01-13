@@ -3,6 +3,7 @@ package org.fasttrackit.onlineshop.domain;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+@Entity
 public class Review {
 
     @Id

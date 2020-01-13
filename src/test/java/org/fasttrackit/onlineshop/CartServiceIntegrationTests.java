@@ -1,7 +1,5 @@
 package org.fasttrackit.onlineshop;
 
-
-import org.fasttrackit.onlineshop.domain.Cart;
 import org.fasttrackit.onlineshop.domain.Customer;
 import org.fasttrackit.onlineshop.domain.Product;
 import org.fasttrackit.onlineshop.service.CartService;
@@ -36,15 +34,13 @@ public class CartServiceIntegrationTests {
     private ProductSteps productSteps;
 
     @Test
-    public void testAddProductToCart_whenNewCartForExistingCustomer_thenCartIsSafe(){
-
+    public void testAddProductToCart_whenNewCartForExistingCustomer_thenCartIsSaved() {
         Customer customer = customerSteps.createCustomer();
         Product product = productSteps.createProduct();
 
         AddProductToCartRequest request = new AddProductToCartRequest();
         request.setCustomerId(customer.getId());
         request.setProductId(product.getId());
-
 
         cartService.addProductToCart(request);
 
@@ -62,7 +58,5 @@ public class CartServiceIntegrationTests {
         assertThat(productFromCart.getId(), is(product.getId()));
         assertThat(productFromCart.getName(), is(product.getName()));
         assertThat(productFromCart.getPrice(), is(product.getPrice()));
-
-
     }
 }

@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.greaterThan;
 @Component
 public class ProductSteps {
 
-
     @Autowired
     private ProductService productService;
 
@@ -37,5 +36,4 @@ public class ProductSteps {
 
         return createdProduct;
     }
-
 }
